@@ -1,0 +1,8 @@
+﻿Jeg benytta meg av tråder (Runnable-objekter), samt nøkkelordet "synchronized"
+
+Bruk av tråder lar flere konsumenter (og potensielt produsenter) kjøre (i hvert fall praktisk talt) samtidig
+	- Dette er viktig for at koden skal være praktisk anvendbar. Dersom kun én ting kan gjøres av gangen, 
+	  er vi nødt til å konstant bytte mellom produksjon og konsumpsjon
+"synchronized" gjør at kodebolken den påvirker kun kan kjøres i én tråd av gangen. M.a.o. som en slags atomisk instruksjon
+	- Dette er viktig for å sørge for at ikke flere tråder gjør det samme, eller potensielt ødelegger for hverandre
+	  I denne oppgava er kanskje hovedpoenget at ikke flere frisører skal begynne å klippe den samme kunden
