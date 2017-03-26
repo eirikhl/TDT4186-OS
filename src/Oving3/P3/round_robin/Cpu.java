@@ -58,7 +58,6 @@ public class Cpu {
         if(!queue.isEmpty()){
             Process temp = this.getActiveProcess();
             if(null != temp) queue.add(temp);
-            curProcess = queue.pollFirst();
             return activeProcessLeft(clock);
         }
         return null;
@@ -72,7 +71,10 @@ public class Cpu {
      */
     public Event activeProcessLeft(long clock) {
         // Incomplete
-
+        if(!queue.isEmpty()){
+            curProcess = queue.pollFirst();
+            return new Event(3, clock);
+        }
         return null;
     }
 
@@ -81,8 +83,8 @@ public class Cpu {
      * @return	The process currently using the CPU.
      */
     public Process getActiveProcess() {
-        // Incomplete
-        return null;
+        // Complete?
+        return curProcess;
     }
 
     /**
@@ -91,6 +93,7 @@ public class Cpu {
      */
     public void timePassed(long timePassed) {
         // Incomplete
+        // ??dafaq dis do??
     }
 
 }
