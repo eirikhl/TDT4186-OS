@@ -40,6 +40,9 @@ public class Process {
 	/** The global time of the last event involving this process */
 	private long timeOfLastEvent;
 
+    /** The time at which the process got switched into the CPU */
+    private long oldTime;
+
 	/**
 	 * Creates a new process with given parameters. Other parameters are randomly
 	 * determined.
@@ -102,4 +105,24 @@ public class Process {
 	}
 
 	// Add more methods as needed
+
+    /**
+     * Updates oldTime, which is used to keep track of how long it's been since something happened to the Process
+     * @param clock The time at which the process was switched
+     */
+    public void updateEventTime(long clock){
+        oldTime = clock;
+    }
+
+    /**
+     * Updates the value of timeSpentInCpu
+     * @param clock The time at which the Process was switched out of the CPU
+     */
+    public void updateTimeSpentInCpu(long clock){
+        timeSpentInCpu += clock - oldTime;
+    }
+
+    public void updateTimeSpentWaiting(long clock){
+        timeSpentInReadyQueue += clock - oldTime;
+    }
 }

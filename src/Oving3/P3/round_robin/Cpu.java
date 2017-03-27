@@ -15,6 +15,8 @@ public class Cpu {
 
     Process curProcess;
 
+    long timePassed;
+
     /**
      * Creates a new CPU with the given parameters.
      * @param cpuQueue		The CPU queue to be used.
@@ -57,7 +59,10 @@ public class Cpu {
         // Complete?
         if(!queue.isEmpty()){
             Process temp = this.getActiveProcess();
-            if(null != temp) queue.add(temp);
+            if(null != temp){
+                temp.updateTimeSpentInCpu(clock);
+                queue.add(temp);
+            }
             return activeProcessLeft(clock);
         }
         return null;
@@ -72,7 +77,9 @@ public class Cpu {
     public Event activeProcessLeft(long clock) {
         // Incomplete
         if(!queue.isEmpty()){
-            curProcess = queue.pollFirst();
+            curProcess = queue.pollFirst(); // Get first element of ready queue
+            curProcess.updateTimeSpentWaiting(clock); // Update the time spent in ready queue
+            curProcess.updateEventTime(clock); // Update the time at which something happened to the Process
             return new Event(3, clock);
         }
         return null;
@@ -94,6 +101,6 @@ public class Cpu {
     public void timePassed(long timePassed) {
         // Incomplete
         // ??dafaq dis do??
+        this.timePassed = timePassed;
     }
-
 }
