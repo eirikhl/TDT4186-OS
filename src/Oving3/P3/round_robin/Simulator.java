@@ -68,7 +68,7 @@ public class Simulator
 	public void simulate() {
 
 		System.out.print("Simulating...");
-		// Genererate the first process arrival event
+		// Generate the first process arrival event
 		eventQueue.insertEvent(new Event(Event.NEW_PROCESS, 0));
 		// Process events until the simulation length is exceeded:
 		while (clock < simulationLength && !eventQueue.isEmpty()) {
@@ -165,7 +165,8 @@ public class Simulator
 
 			// Since we haven't implemented the CPU and I/O device yet,
 			// we let the process leave the system immediately, for now.
-			memory.processCompleted(p);
+			// --- NO WE DONT
+			//memory.processCompleted(p);
 			// Try to use the freed memory:
 			transferProcessFromMemToReady();
 			// Update statistics
@@ -181,6 +182,8 @@ public class Simulator
 	 */
 	private void switchProcess() {
 		// Incomplete
+
+		this.cpu.switchProcess(this.clock);
 		// Update statistics???
 	}
 
@@ -188,7 +191,11 @@ public class Simulator
 	 * Ends the active process, and deallocates any resources allocated to it.
 	 */
 	private void endProcess() {
-		// Incomplete
+		// (In)complete
+		memory.processCompleted(cpu.getActiveProcess()); //Frees memory used by current process
+		eventQueue.insertEvent(cpu.switchProcess(clock));
+		//ends process after deallocating resources to avoid deallocating wrong process (?)
+		//should be adding event to eventqueue.
 	}
 
 	/**
@@ -196,7 +203,9 @@ public class Simulator
 	 * perform an I/O operation.
 	 */
 	private void processIoRequest() {
-		// Incomplete
+		// (In)complete
+		io.addIoRequest(cpu.getActiveProcess(),clock); //gets current process and signals need for I/O
+		eventQueue.insertEvent(cpu.switchProcess(clock)); //then switches out said process.
 	}
 
 	/**
@@ -204,7 +213,9 @@ public class Simulator
 	 * is done with its I/O operation.
 	 */
 	private void endIoOperation() {
-		// Incomplete
+		// (In)complete
+		cpuQueue.add(io.removeActiveProcess()); //simply removes process from io device, returns it to cpu queue.
+
 	}
 
 

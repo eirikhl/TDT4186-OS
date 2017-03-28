@@ -37,7 +37,7 @@ public class Io {
     public Event addIoRequest(Process requestingProcess, long clock) {
         // Incomplete
         queue.add(requestingProcess);
-        Event e = new Event(4, clock);
+        Event e = startIoOperation(clock); //event ending I/O maybe type 5?
         return e;
     }
 
@@ -52,10 +52,11 @@ public class Io {
         // Incomplete
         Process ret = queue.pollFirst();
         if( null == ret )return null;
+        activeProcess = ret;
+        //update statistic?
 
 
-
-        return null;
+        return new Event(4, clock); //if i understand correctly
     }
 
     /**
@@ -63,7 +64,8 @@ public class Io {
      * @param timePassed	The amount of time that has passed since the last call to this method.
      */
     public void timePassed(long timePassed) {
-        // Incomplete
+        // Incomplete?
+        this.IOtime = timePassed; // if it translates from the cpu like that ?
     }
 
     /**
@@ -72,7 +74,11 @@ public class Io {
      */
     public Process removeActiveProcess() {
         // Incomplete
-        return null;
+        Process temp = getActiveProcess();
+        if(!queue.isEmpty()){
+            // start new Io process?
+        }
+        return temp;
     }
 
     public Process getActiveProcess() {

@@ -76,6 +76,11 @@ public class Cpu {
      */
     public Event activeProcessLeft(long clock) {
         // Incomplete
+        /*
+         Need to return event(2) if process left because it ended
+                        event(3) if process left because time quant expired
+                        event(4) if process left to perform I/O ??
+          */
         if(!queue.isEmpty()){
             curProcess = queue.pollFirst(); // Get first element of ready queue
             curProcess.updateTimeSpentWaiting(clock); // Update the time spent in ready queue
@@ -90,7 +95,7 @@ public class Cpu {
      * @return	The process currently using the CPU.
      */
     public Process getActiveProcess() {
-        // Complete?
+        // Complete? - Don't see why not
         return curProcess;
     }
 
@@ -101,6 +106,7 @@ public class Cpu {
     public void timePassed(long timePassed) {
         // Incomplete
         // ??dafaq dis do??
+        // basically update the timePassed field? o.O
         this.timePassed = timePassed;
     }
 }
