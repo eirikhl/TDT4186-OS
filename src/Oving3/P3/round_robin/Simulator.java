@@ -158,7 +158,6 @@ public class Simulator
 			// TODO: Add this process to the CPU queue!
             // TODONE?
 			// Also add new events to the event queue if needed
-			cpuQueue.add(p);
 			Event newEvent = cpu.insertProcess(p, clock);
 			eventQueue.insertEvent(newEvent);
 			processEvent(newEvent);
@@ -192,7 +191,7 @@ public class Simulator
 	 */
 	private void endProcess() {
 		// (In)complete
-		memory.processCompleted(cpu.getActiveProcess()); //Frees memory used by current process
+		memory.processCompleted(cpu.getCompletedProcess()); //Frees memory used by current process
 		eventQueue.insertEvent(cpu.switchProcess(clock));
 		//ends process after deallocating resources to avoid deallocating wrong process (?)
 		//should be adding event to eventqueue.
@@ -204,7 +203,7 @@ public class Simulator
 	 */
 	private void processIoRequest() {
 		// (In)complete
-		io.addIoRequest(cpu.getActiveProcess(),clock); //gets current process and signals need for I/O
+		io.addIoRequest(cpu.getIoRequest(),clock); //gets current process and signals need for I/O
 		eventQueue.insertEvent(cpu.switchProcess(clock)); //then switches out said process.
 	}
 

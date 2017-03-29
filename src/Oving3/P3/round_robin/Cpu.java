@@ -1,7 +1,5 @@
 package Oving3.P3.round_robin;
 
-import sun.awt.image.ImageWatched;
-
 import java.util.LinkedList;
 
 /**
@@ -16,6 +14,10 @@ public class Cpu {
     Process curProcess;
 
     long timePassed;
+    private long cpuTimeLeft;
+
+    private LinkedList<Process> completedProcesses = new LinkedList<>();
+    private LinkedList<Process> ioQueue = new LinkedList<>();
 
     /**
      * Creates a new CPU with the given parameters.
@@ -56,16 +58,25 @@ public class Cpu {
      */
     public Event switchProcess(long clock) {
         // InComplete
-        Process temp = getActiveProcess();
-        Event event;
+        Process curr = getActiveProcess();
+        if( curr != null ){
+            if( this.cpuTimeLeft > 0 ) return null; // if time quant is not finished
+            //adds current process to back of queue and get next process out of queue
+            queue.add(curr);
+        } else if( queue.isEmpty() ) return null;
 
-        if ( timePassed >= maxTime ) event = new Event(3, clock );
-        else if(null == this.getActiveProcess()) event = new Event(1, clock); //not correct
-        else if( queue.isEmpty() ) event = null; // not correct
-        else if( temp.getCpuTimeNeeded() <= timePassed ) event = new Event(2,clock);
-        else event = null;
+        cpuTimeLeft = maxTime;
 
-        return event;
+        // if no process in cpu and queue is not empty: next = first in queue
+        curProcess = queue.pollFirst();
+
+        // if the time to next io is less than time quant, return io request
+        if( curProcess.getTimeToNextIoOperation() <= maxTime ) return new Event(Event.IO_REQUEST, clock + curProcess.getTimeToNextIoOperation());
+
+        // if time needed is less than time spent, return endProcess event
+        if( curProcess.getTimeSpentInCpu() >= curProcess.getCpuTimeNeeded() ) return new Event(Event.END_PROCESS, clock + curProcess.getCpuTimeNeeded());
+
+        return new Event(Event.SWITCH_PROCESS, clock);
     }
 
     /**
@@ -84,7 +95,6 @@ public class Cpu {
         if(!queue.isEmpty()){
             curProcess = queue.pollFirst(); // Get first element of ready queue
             curProcess.updateTimeSpentWaiting(clock); // Update the time spent in ready queue
-            curProcess.updateEventTime(clock); // Update the time at which something happened to the Process
             return new Event(3, clock);
         }
         return null;
@@ -108,5 +118,23 @@ public class Cpu {
         // ??dafaq dis do??
         // basically update the timePassed field? o.O
         this.timePassed = timePassed;
+        this.cpuTimeLeft -= timePassed;
+
+        for (Process p : queue) {
+            p.updateTimeSpentWaiting(timePassed);
+        }
+
+        if ( null != curProcess ){
+            curProcess.updateTimeSpentInCpu(timePassed);
+            curProcess.updateTimeToNextIoOperation(timePassed);
+        }
+    }
+
+    public Process getCompletedProcess() {
+        return completedProcesses.pollFirst();
+    }
+
+    public Process getIoRequest() {
+        return ioQueue.pollFirst();
     }
 }

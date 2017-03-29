@@ -16,8 +16,14 @@ public class Process {
     private long memoryNeeded;
 	/** The amount of cpu time still needed by this process */
     private long cpuTimeNeeded;
+
+
+
 	/** The average time between the need for I/O operations for this process */
     private long avgIoInterval;
+
+
+
 	/** The time left until the next time this process needs I/O */
     private long timeToNextIoOperation = 0;
 
@@ -109,22 +115,123 @@ public class Process {
 	public long getCpuTimeNeeded(){return cpuTimeNeeded;}
 
     /**
-     * Updates oldTime, which is used to keep track of how long it's been since something happened to the Process
-     * @param clock The time at which the process was switched
-     */
-    public void updateEventTime(long clock){
-        oldTime = clock;
-    }
-
-    /**
      * Updates the value of timeSpentInCpu
      * @param clock The time at which the Process was switched out of the CPU
      */
     public void updateTimeSpentInCpu(long clock){
-        timeSpentInCpu += clock - oldTime;
+        timeSpentInCpu += clock;
     }
 
     public void updateTimeSpentWaiting(long clock){
-        timeSpentInReadyQueue += clock - oldTime;
+        timeSpentInReadyQueue = clock;
     }
+
+	public long getAvgIoInterval() {
+		return avgIoInterval;
+	}
+
+	public static long getNextProcessId() {
+		return nextProcessId;
+	}
+
+	public static void setNextProcessId(long nextProcessId) {
+		Process.nextProcessId = nextProcessId;
+	}
+
+	public void setProcessId(long processId) {
+		this.processId = processId;
+	}
+
+	public void setMemoryNeeded(long memoryNeeded) {
+		this.memoryNeeded = memoryNeeded;
+	}
+
+	public void setCpuTimeNeeded(long cpuTimeNeeded) {
+		this.cpuTimeNeeded = cpuTimeNeeded;
+	}
+
+	public void setAvgIoInterval(long avgIoInterval) {
+		this.avgIoInterval = avgIoInterval;
+	}
+
+	public void updateTimeToNextIoOperation(long timeToNextIoOperation) {
+		this.timeToNextIoOperation = timeToNextIoOperation;
+	}
+
+	public long getTimeSpentWaitingForMemory() {
+		return timeSpentWaitingForMemory;
+	}
+
+	public void setTimeSpentWaitingForMemory(long timeSpentWaitingForMemory) {
+		this.timeSpentWaitingForMemory = timeSpentWaitingForMemory;
+	}
+
+	public long getTimeSpentInReadyQueue() {
+		return timeSpentInReadyQueue;
+	}
+
+	public void setTimeSpentInReadyQueue(long timeSpentInReadyQueue) {
+		this.timeSpentInReadyQueue = timeSpentInReadyQueue;
+	}
+
+	public long getTimeSpentInCpu() {
+		return timeSpentInCpu;
+	}
+
+	public void setTimeSpentInCpu(long timeSpentInCpu) {
+		this.timeSpentInCpu = timeSpentInCpu;
+	}
+
+	public long getTimeSpentWaitingForIo() {
+		return timeSpentWaitingForIo;
+	}
+
+	public void setTimeSpentWaitingForIo(long timeSpentWaitingForIo) {
+		this.timeSpentWaitingForIo = timeSpentWaitingForIo;
+	}
+
+	public long getTimeSpentInIo() {
+		return timeSpentInIo;
+	}
+
+	public void setTimeSpentInIo(long timeSpentInIo) {
+		this.timeSpentInIo = timeSpentInIo;
+	}
+
+	public long getNofTimesInReadyQueue() {
+		return nofTimesInReadyQueue;
+	}
+
+	public void setNofTimesInReadyQueue(long nofTimesInReadyQueue) {
+		this.nofTimesInReadyQueue = nofTimesInReadyQueue;
+	}
+
+	public long getNofTimesInIoQueue() {
+		return nofTimesInIoQueue;
+	}
+
+	public void setNofTimesInIoQueue(long nofTimesInIoQueue) {
+		this.nofTimesInIoQueue = nofTimesInIoQueue;
+	}
+
+	public long getTimeOfLastEvent() {
+		return timeOfLastEvent;
+	}
+
+	public void setTimeOfLastEvent(long timeOfLastEvent) {
+		this.timeOfLastEvent = timeOfLastEvent;
+	}
+
+	public long getOldTime() {
+		return oldTime;
+	}
+
+	public void setOldTime(long oldTime) {
+		this.oldTime = oldTime;
+	}
+
+	public long getTimeToNextIoOperation() {
+		return timeToNextIoOperation;
+	}
+
 }
