@@ -159,13 +159,15 @@ public class Simulator
             // TODONE?
 			// Also add new events to the event queue if needed
 			Event newEvent = cpu.insertProcess(p, clock);
-			eventQueue.insertEvent(newEvent);
-			processEvent(newEvent);
+			if(newEvent!= null) {
+				eventQueue.insertEvent(newEvent);
+				processEvent(newEvent);
+			}
 
 			// Since we haven't implemented the CPU and I/O device yet,
 			// we let the process leave the system immediately, for now.
 			// --- NO WE DONT
-			//memory.processCompleted(p);
+//			memory.processCompleted(p);
 			// Try to use the freed memory:
 			transferProcessFromMemToReady();
 			// Update statistics
@@ -181,9 +183,7 @@ public class Simulator
 	 */
 	private void switchProcess() {
 		// Incomplete
-
-//		this.cpu.switchProcess(this.clock);
-		// Update statistics???
+		eventQueue.insertEvent(cpu.switchProcess(clock));
 	}
 
 	/**
@@ -191,8 +191,9 @@ public class Simulator
 	 */
 	private void endProcess() {
 		// (In)complete
-		memory.processCompleted(cpu.getCompletedProcess()); //Frees memory used by current process
-		eventQueue.insertEvent(cpu.switchProcess(clock));
+		cpu.curProcess.updateStatistics(statistics);
+		memory.processCompleted(cpu.curProcess); //Frees memory used by current process
+		eventQueue.insertEvent(cpu.activeProcessLeft(clock));
 		//ends process after deallocating resources to avoid deallocating wrong process (?)
 		//should be adding event to eventqueue.
 	}
@@ -203,8 +204,12 @@ public class Simulator
 	 */
 	private void processIoRequest() {
 		// (In)complete
-		io.addIoRequest(cpu.getIoRequest(),clock); //gets current process and signals need for I/O
-		eventQueue.insertEvent(cpu.switchProcess(clock)); //then switches out said process.
+		Process req = cpu.getActiveProcess();
+		if(req != null){
+			//ioQueue.add(req);
+			eventQueue.insertEvent(io.addIoRequest(cpu.getActiveProcess(),clock)); //gets current process and signals need for I/O
+			eventQueue.insertEvent(cpu.activeProcessLeft(clock)); //then switches out said process.
+		}
 	}
 
 	/**
@@ -213,8 +218,11 @@ public class Simulator
 	 */
 	private void endIoOperation() {
 		// (In)complete
-		cpuQueue.add(io.removeActiveProcess()); //simply removes process from io device, returns it to cpu queue.
-
+		Process done = io.removeActiveProcess();
+		if(null != done){
+			eventQueue.insertEvent(io.startIoOperation(clock));
+			eventQueue.insertEvent(cpu.insertProcess(done,clock)); //simply removes process from io device, returns it to cpu queue.
+		}
 	}
 
 

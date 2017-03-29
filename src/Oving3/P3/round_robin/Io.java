@@ -35,8 +35,12 @@ public class Io {
      */
     public Event addIoRequest(Process requestingProcess, long clock) {
         // Incomplete
+        if (null == requestingProcess) { return null;}
         queue.add(requestingProcess);
-        Event e = startIoOperation(clock); //event ending I/O maybe type 5?
+        requestingProcess.updateNofTimesInIoQueue();
+
+        Event e = startIoOperation(clock);
+
         return e;
     }
 
@@ -49,13 +53,15 @@ public class Io {
      */
     public Event startIoOperation(long clock) {
         // Incomplete
+        if(activeProcess != null) return null;
+
         Process ret = queue.pollFirst();
-        if( null == ret )return null;
+        long timeInIo = newIoTime();
+        if( null == ret ) return null;
         activeProcess = ret;
         //update statistic?
 
-
-        return new Event(4, clock); //if i understand correctly
+        return new Event(Event.END_IO, clock + timeInIo);
     }
 
     /**
@@ -64,8 +70,16 @@ public class Io {
      */
     public void timePassed(long timePassed) {
         // Complete?
-        this.IOtime += timePassed; // if it translates from the cpu like that ?
-        this.IOtime /= 2;
+        // if it translates from the cpu like that ?
+        for( Process p : queue){
+            p.updateTimeSpentWaitingForIo(timePassed);
+        }
+        if(activeProcess != null) {
+            activeProcess.updateTimeSpentInIo(timePassed);
+        }
+        if(stats.ioQueueLargestLength < queue.size()) stats.ioQueueLargestLength = queue.size();
+        stats.ioQueueLengthTime += queue.size()*timePassed;
+
     }
 
     /**
@@ -74,12 +88,20 @@ public class Io {
      */
     public Process removeActiveProcess() {
         // !Incomplete
+        stats.nofProcessedIoOperations++;
         Process temp = getActiveProcess();
-        if ( null != temp ) activeProcess = null;
+        if ( null != temp ) {
+            activeProcess = null;
+            temp.nextIoTime();
+        }
         return temp;
     }
 
     public Process getActiveProcess() {
         return activeProcess;
+    }
+
+    public long newIoTime(){
+        return (long) (IOtime*0.75 +IOtime*(Math.random()*0.5));
     }
 }

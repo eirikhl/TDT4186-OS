@@ -10,7 +10,7 @@ public class Statistics
 	/** The number of processes that have exited the system */
 	public long nofCompletedProcesses = 0;
 	/** The number of processes that have entered the system */
-	public long nofCreatedProcesses = 0;
+	public long nofCreatedProcesses = 1;
 
 	/** The total time that the CPU has been busy (processing) */
 	public long totalBusyCpuTime = 0;

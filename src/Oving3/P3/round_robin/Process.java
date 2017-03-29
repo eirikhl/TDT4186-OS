@@ -17,15 +17,12 @@ public class Process {
 	/** The amount of cpu time still needed by this process */
     private long cpuTimeNeeded;
 
-
-
 	/** The average time between the need for I/O operations for this process */
     private long avgIoInterval;
-
-
-
 	/** The time left until the next time this process needs I/O */
     private long timeToNextIoOperation = 0;
+	/** The time needed for an I/O operation */
+    private long ioTimeNeeded;
 
 	/** The time that this process has spent waiting in the memory queue */
 	private long timeSpentWaitingForMemory = 0;
@@ -49,6 +46,8 @@ public class Process {
     /** The time at which the process got switched into the CPU */
     private long oldTime;
 
+
+
 	/**
 	 * Creates a new process with given parameters. Other parameters are randomly
 	 * determined.
@@ -62,10 +61,13 @@ public class Process {
 		cpuTimeNeeded = 100 + (long)(Math.random()*9900);
 		// Average interval between I/O requests varies from 1% to 25% of CPU time needed
 		avgIoInterval = (1 + (long)(Math.random()*25))*cpuTimeNeeded/100;
+		// Generate random I/O time required
+		ioTimeNeeded = (1 +(long)(Math.random()*25))*cpuTimeNeeded/100;
 		// The first and latest event involving this process is its creation
 		timeOfLastEvent = creationTime;
 		// Assign a process ID
 		processId = nextProcessId++;
+		nextIoTime();
 	}
 
 	/**
@@ -102,8 +104,6 @@ public class Process {
 
         statistics.totalNofTimesInReadyQueue += nofTimesInReadyQueue;
         statistics.totalNofTimesInIoQueue += nofTimesInIoQueue;
-
-        statistics.nofCompletedProcesses++;
 	}
 
 	public long getProcessId() {
@@ -120,10 +120,11 @@ public class Process {
      */
     public void updateTimeSpentInCpu(long clock){
         timeSpentInCpu += clock;
+        cpuTimeNeeded -= clock;
     }
 
     public void updateTimeSpentWaiting(long clock){
-        timeSpentInReadyQueue = clock;
+        timeSpentInReadyQueue += clock;
     }
 
 	public long getAvgIoInterval() {
@@ -155,63 +156,64 @@ public class Process {
 	}
 
 	public void updateTimeToNextIoOperation(long timeToNextIoOperation) {
-		this.timeToNextIoOperation = timeToNextIoOperation;
+		this.timeToNextIoOperation -= timeToNextIoOperation;
 	}
 
 	public long getTimeSpentWaitingForMemory() {
 		return timeSpentWaitingForMemory;
 	}
 
-	public void setTimeSpentWaitingForMemory(long timeSpentWaitingForMemory) {
-		this.timeSpentWaitingForMemory = timeSpentWaitingForMemory;
+	public void updateTimeSpentWaitingForMemory(long timeSpentWaitingForMemory) {
+		this.timeSpentWaitingForMemory += timeSpentWaitingForMemory;
 	}
 
 	public long getTimeSpentInReadyQueue() {
 		return timeSpentInReadyQueue;
 	}
 
-	public void setTimeSpentInReadyQueue(long timeSpentInReadyQueue) {
-		this.timeSpentInReadyQueue = timeSpentInReadyQueue;
+	public void updateTimeSpentInReadyQueue(long timeSpentInReadyQueue) {
+		this.timeSpentInReadyQueue += timeSpentInReadyQueue;
 	}
 
 	public long getTimeSpentInCpu() {
 		return timeSpentInCpu;
 	}
 
-	public void setTimeSpentInCpu(long timeSpentInCpu) {
-		this.timeSpentInCpu = timeSpentInCpu;
-	}
+//	public void updateTimeSpentInCpu(long timeSpentInCpu) {
+//		this.timeSpentInCpu += timeSpentInCpu;
+//	}
 
 	public long getTimeSpentWaitingForIo() {
 		return timeSpentWaitingForIo;
 	}
 
-	public void setTimeSpentWaitingForIo(long timeSpentWaitingForIo) {
-		this.timeSpentWaitingForIo = timeSpentWaitingForIo;
+	public void updateTimeSpentWaitingForIo(long timeSpentWaitingForIo) {
+		this.timeSpentWaitingForIo += timeSpentWaitingForIo;
 	}
 
 	public long getTimeSpentInIo() {
 		return timeSpentInIo;
 	}
 
-	public void setTimeSpentInIo(long timeSpentInIo) {
-		this.timeSpentInIo = timeSpentInIo;
+	public void updateTimeSpentInIo(long timeSpentInIo) {
+		this.timeSpentInIo += timeSpentInIo;
+		this.ioTimeNeeded -= timeSpentInIo;
 	}
 
 	public long getNofTimesInReadyQueue() {
 		return nofTimesInReadyQueue;
 	}
 
-	public void setNofTimesInReadyQueue(long nofTimesInReadyQueue) {
-		this.nofTimesInReadyQueue = nofTimesInReadyQueue;
+	public void updateNofTimesInReadyQueue() {
+		this.nofTimesInReadyQueue++;
 	}
 
 	public long getNofTimesInIoQueue() {
 		return nofTimesInIoQueue;
 	}
 
-	public void setNofTimesInIoQueue(long nofTimesInIoQueue) {
-		this.nofTimesInIoQueue = nofTimesInIoQueue;
+	public void updateNofTimesInIoQueue() {
+		this.nofTimesInIoQueue++;
 	}
 
 	public long getTimeOfLastEvent() {
@@ -232,6 +234,9 @@ public class Process {
 
 	public long getTimeToNextIoOperation() {
 		return timeToNextIoOperation;
+	}
+	public void nextIoTime(){
+		timeToNextIoOperation = (long) (avgIoInterval*0.75+Math.random()*0.5*avgIoInterval);
 	}
 
 }
