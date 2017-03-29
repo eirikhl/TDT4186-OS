@@ -106,6 +106,8 @@ public class Process {
 
 	// Add more methods as needed
 
+	public long getCpuTimeNeeded(){return cpuTimeNeeded;}
+
     /**
      * Updates oldTime, which is used to keep track of how long it's been since something happened to the Process
      * @param clock The time at which the process was switched

@@ -159,7 +159,7 @@ public class Simulator
             // TODONE?
 			// Also add new events to the event queue if needed
 			cpuQueue.add(p);
-			Event newEvent = cpu.switchProcess(clock);
+			Event newEvent = cpu.insertProcess(p, clock);
 			eventQueue.insertEvent(newEvent);
 			processEvent(newEvent);
 
@@ -183,7 +183,7 @@ public class Simulator
 	private void switchProcess() {
 		// Incomplete
 
-		this.cpu.switchProcess(this.clock);
+//		this.cpu.switchProcess(this.clock);
 		// Update statistics???
 	}
 

@@ -43,8 +43,7 @@ public class Cpu {
     public Event insertProcess(Process p, long clock) {
         // Complete?
         queue.add(p);
-        if(null == this.getActiveProcess()) return switchProcess(clock);
-        return null;
+        return switchProcess(clock);
     }
 
     /**
@@ -56,16 +55,17 @@ public class Cpu {
      *				or null	if no process was activated.
      */
     public Event switchProcess(long clock) {
-        // Complete?
-        if(!queue.isEmpty()){
-            Process temp = this.getActiveProcess();
-            if(null != temp){
-                temp.updateTimeSpentInCpu(clock);
-                queue.add(temp);
-            }
-            return activeProcessLeft(clock);
-        }
-        return null;
+        // InComplete
+        Process temp = getActiveProcess();
+        Event event;
+
+        if ( timePassed >= maxTime ) event = new Event(3, clock );
+        else if(null == this.getActiveProcess()) event = new Event(1, clock); //not correct
+        else if( queue.isEmpty() ) event = null; // not correct
+        else if( temp.getCpuTimeNeeded() <= timePassed ) event = new Event(2,clock);
+        else event = null;
+
+        return event;
     }
 
     /**

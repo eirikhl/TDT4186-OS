@@ -12,7 +12,6 @@ public class Io {
     private LinkedList<Process> queue;
     private long IOtime;
     private Oving3.P3.round_robin.Statistics stats;
-
     /**
      * Creates a new I/O device with the given parameters.
      * @param ioQueue		The I/O queue to be used.
@@ -64,8 +63,9 @@ public class Io {
      * @param timePassed	The amount of time that has passed since the last call to this method.
      */
     public void timePassed(long timePassed) {
-        // Incomplete?
-        this.IOtime = timePassed; // if it translates from the cpu like that ?
+        // Complete?
+        this.IOtime += timePassed; // if it translates from the cpu like that ?
+        this.IOtime /= 2;
     }
 
     /**
@@ -73,11 +73,9 @@ public class Io {
      * @return	The process that was doing I/O, or null if no process was doing I/O.
      */
     public Process removeActiveProcess() {
-        // Incomplete
+        // !Incomplete
         Process temp = getActiveProcess();
-        if(!queue.isEmpty()){
-            // start new Io process?
-        }
+        if ( null != temp ) activeProcess = null;
         return temp;
     }
 
